@@ -1,0 +1,4 @@
+range, n_sensors, e_max, e_mc_max, brute_force, main, nguyen2020
+50, 10, 3000, 30000, 2, 3, 3
+50, 10, 2000, 20000, 3, 4, 4
+50, 10, 5000, 15000, 3, 8, 101

@@ -2,6 +2,25 @@
   "files.associations": {
     "tuple": "cpp",
     "*.tcc": "cpp",
-    "string": "cpp"
+    "string": "cpp",
+    "ostream": "cpp",
+    "vector": "cpp",
+    "array": "cpp",
+    "deque": "cpp",
+    "list": "cpp",
+    "string_view": "cpp",
+    "any": "cpp",
+    "regex": "cpp",
+    "bitset": "cpp",
+    "initializer_list": "cpp",
+    "utility": "cpp",
+    "valarray": "cpp",
+    "iosfwd": "cpp",
+    "forward_list": "cpp",
+    "unordered_map": "cpp",
+    "unordered_set": "cpp",
+    "chrono": "cpp",
+    "random": "cpp",
+    "limits": "cpp"
   }
 }

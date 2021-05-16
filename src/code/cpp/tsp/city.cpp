@@ -45,7 +45,7 @@ int city::dist(city * city_in)
     x2 *= x2;
     y2 *= y2;
     
-    return floor(sqrt(x2 + y2) + 0.5);  // Rounds down from 0.0 to .499_, rounds up from 0.5 to .99_
+    return ceil(sqrt(x2 + y2));  // Rounds down from 0.0 to .499_, rounds up from 0.5 to .99_
 }
 
 int city::get_x()

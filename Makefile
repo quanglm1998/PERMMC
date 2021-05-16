@@ -1,25 +1,32 @@
-#makefile for Traveling Salesman Problem
-#CS325
-#Sam Best
-#March 4 2013
+SOURCEDIR = src/code/cpp
+BUILDDIR = build
 
-FLAGS   := -O2 -DNDEBUG -ftree-vectorize -Wall
-OBJECTS := main.o city.o tree.o algorithms.o
+FLAGS   := -std=c++17 -g -ftree-vectorize -Wall -O2
+OBJECTS := $(BUILDDIR)/city.o $(BUILDDIR)/tree.o $(BUILDDIR)/algorithms.o
 
-tsp: $(OBJECTS)
-	g++ $(FLAGS) $(OBJECTS) -o tsp
+brute_force: $(SOURCEDIR)/brute_force.cc $(OBJECTS)
+	g++ $(FLAGS) $(SOURCEDIR)/brute_force.cc $(OBJECTS) -o $(BUILDDIR)/brute_force
 
-main.o: main.cc
-	g++ $(FLAGS) -c main.cc
+nguyen2020: $(SOURCEDIR)/nguyen2020.cc $(OBJECTS)
+	g++ $(FLAGS) $(SOURCEDIR)/nguyen2020.cc $(OBJECTS) -o $(BUILDDIR)/nguyen2020
+
+main: $(BUILDDIR)/main.o $(OBJECTS)
+	g++ $(FLAGS) $(BUILDDIR)/main.o $(OBJECTS) -o $(BUILDDIR)/main
+
+$(BUILDDIR)/main.o: $(SOURCEDIR)/main.cc
+	g++ $(FLAGS) -c $(SOURCEDIR)/main.cc -o $(BUILDDIR)/main.o
 	
-city.o: city.cpp
-	g++ $(FLAGS) -c city.cpp	
+$(BUILDDIR)/city.o: $(SOURCEDIR)/tsp/city.cpp
+	g++ $(FLAGS) -c $(SOURCEDIR)/tsp/city.cpp	-o $(BUILDDIR)/city.o
 	
-tree.o: tree.cpp
-	g++ $(FLAGS) -c tree.cpp
+$(BUILDDIR)/tree.o: $(SOURCEDIR)/tsp/tree.cpp
+	g++ $(FLAGS) -c $(SOURCEDIR)/tsp/tree.cpp -o $(BUILDDIR)/tree.o
 	
-algorithms.o: algorithms.cpp
-	g++ $(FLAGS) -c algorithms.cpp
+$(BUILDDIR)/algorithms.o: $(SOURCEDIR)/tsp/algorithms.cpp
+	g++ $(FLAGS) -c $(SOURCEDIR)/tsp/algorithms.cpp -o $(BUILDDIR)/algorithms.o
+
+gen_data: $(SOURCEDIR)/gen_data.cc
+	g++ $(FLAGS) $(SOURCEDIR)/gen_data.cc -o $(BUILDDIR)/gen_data
 
 clean:
-	rm -rf *o tsp
+	rm -rf $(BUILDDIR)/*.o $(BUILDDIR)/main $(BUILDDIR)/gen_data

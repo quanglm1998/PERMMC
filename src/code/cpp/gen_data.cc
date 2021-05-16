@@ -1,5 +1,7 @@
 #include <bits/stdc++.h>
 
+#include "utils.h"
+
 using namespace std;
 
 /* 
@@ -7,35 +9,47 @@ using namespace std;
  * ensure that the map is CONNECTED by changing kConnectionRange large enough
  */
 
-const int kInf = 1e9;
-
-const unsigned int kSeed = 0; // for randomizing
+// const unsigned int kSeed = 0; // for randomizing
 const int kSize = 50; // kSize * kSize plane with (0,0) being the BS
-const int kConnectionRange = 20; // radius of a sensor, ensure that the map is CONNECTED
-const int kNumberOfSensors = 100;
+const int kConnectionRange = 50; // radius of a sensor, ensure that the map is CONNECTED
+const int kNumberOfSensors = 10;
 const int kDefaultConsumingRate = 10;
 
-const int kToSensorRate = 10000; // r
-const int kFromMcRate = 10010; // r_c
+const int kEMax = 3000;
+const int kEMcMax = 15000;
+const int kToSensorRate = 5000; // r
+const int kFromMcRate = 5010; // r_c
 const int kMovingRate = 100; // r_m
-const int kToMcRate = 100000; // r_mc
+const int kToMcRate = 1000000; // r_mc
 
-
-struct Sensor {
-  int x, y;
-  int consuming_rate;
-};
-
-vector<Sensor> sensors;
-
-double GetDistance(int u, int v) {
-  return sqrt(
-      1.0 * (sensors[u].x - sensors[v].x) * (sensors[u].x - sensors[v].x) +
-      1.0 * (sensors[u].y - sensors[v].y) * (sensors[u].y - sensors[v].y)
-  ); 
+void VisualizeMap() {
+  vector<vector<char>> matrix(kSize * 2 + 1, vector<char>(kSize * 2 + 1, '.'));
+  for (auto sensor : sensors) {
+    matrix[sensor.x + kSize][sensor.y + kSize] = '*';
+  }
+  matrix[kSize][kSize] = '0';
+  for (auto row : matrix) {
+    for (auto element : row) {
+      cout << element;
+    }
+    cout << endl;
+  }
 }
 
 void GeneratePointList() {
+  int seed = 0;
+  seed ^= kSize;
+  seed ^= kConnectionRange;
+  seed ^= kNumberOfSensors;
+  seed ^= kDefaultConsumingRate;
+
+  seed ^= kEMax;
+  seed ^= kEMcMax;
+  seed ^= kToSensorRate;
+  seed ^= kFromMcRate;
+  seed ^= kMovingRate;
+  seed ^= kToMcRate;
+  srand(seed);
   vector<Sensor> point_list;
   point_list.push_back({0, 0, 0});
   for (int x = -kSize; x <= kSize; x++) {
@@ -45,19 +59,6 @@ void GeneratePointList() {
   }
   random_shuffle(point_list.begin() + 1, point_list.end());
   sensors = vector<Sensor>(point_list.begin(), point_list.begin() + kNumberOfSensors + 1);
-  
-  // // print sensor map
-  // vector<vector<char>> matrix(kSize * 2 + 1, vector<char>(kSize * 2 + 1, '.'));
-  // for (auto sensor : sensors) {
-  //   matrix[sensor.x + kSize][sensor.y + kSize] = '*';
-  // }
-  // matrix[kSize][kSize] = '0';
-  // for (auto row : matrix) {
-  //   for (auto element : row) {
-  //     cout << element;
-  //   }
-  //   cout << endl;
-  // }
 }
 
 void Dijkstra() {
@@ -77,10 +78,10 @@ void Dijkstra() {
     used[u] = 1;
     list.push_back(u);
     for (int i = 0; i <= kNumberOfSensors; i++) {
-      if (!used[i] && GetDistance(u, i) <= kConnectionRange &&
-          dist[i] > dist[u] + GetDistance(u, i)) {
+      if (!used[i] && GetDistance(sensors[u], sensors[i]) <= kConnectionRange &&
+          dist[i] > dist[u] + GetDistance(sensors[u], sensors[i])) {
 
-        dist[i] = dist[u] + GetDistance(u, i);
+        dist[i] = dist[u] + GetDistance(sensors[u], sensors[i]);
         s.insert({dist[i], i});
         pre[i] = u;
       }
@@ -105,19 +106,22 @@ void Dijkstra() {
 }
 
 string GetFilePath() {
-  string file_path = "data/data";
-  file_path += '_' + to_string(kSeed);
-  file_path += '_' + to_string(kSize);
-  file_path += '_' + to_string(kConnectionRange);
-  file_path += '_' + to_string(kNumberOfSensors);
-  file_path += '_' + to_string(kDefaultConsumingRate);
-  file_path += ".txt";
+  string file_path = "data/data_foo.txt";
+  // file_path += '_' + to_string(kSeed);
+  // file_path += '_' + to_string(kSize);
+  // file_path += '_' + to_string(kConnectionRange);
+  // file_path += '_' + to_string(kNumberOfSensors);
+  // file_path += '_' + to_string(kDefaultConsumingRate);
+  // file_path += ".txt";
   return file_path;
 }
 
 void DumpDataToFile() {
   string file_path = GetFilePath();
   fstream ofs(file_path, ofstream::out);
+  ofs << kEMax << ' ' << kEMcMax << ' ' << kToSensorRate << ' ' << kFromMcRate << ' '
+      << kMovingRate << ' ' << kToMcRate << '\n';
+
   ofs << kNumberOfSensors << '\n';
   for (int i = 1; i < (int)sensors.size(); i++) {
     auto sensor = sensors[i];
@@ -129,8 +133,6 @@ void DumpDataToFile() {
 int main() {
   ios_base::sync_with_stdio(0);
   cin.tie(0);
-  srand(kSeed);
-
   GeneratePointList();
   Dijkstra();
   DumpDataToFile();
