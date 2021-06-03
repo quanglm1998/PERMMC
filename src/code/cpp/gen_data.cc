@@ -11,12 +11,12 @@ using namespace std;
 
 // const unsigned int kSeed = 0; // for randomizing
 const int kSize = 50; // kSize * kSize plane with (0,0) being the BS
-const int kConnectionRange = 50; // radius of a sensor, ensure that the map is CONNECTED
-const int kNumberOfSensors = 10;
+const int kConnectionRange = 20; // radius of a sensor, ensure that the map is CONNECTED
+const int kNumberOfSensors = 100;
 const int kDefaultConsumingRate = 10;
 
-const int kEMax = 3000;
-const int kEMcMax = 15000;
+const int kEMax = 10000;
+const int kEMcMax = 100000;
 const int kToSensorRate = 5000; // r
 const int kFromMcRate = 5010; // r_c
 const int kMovingRate = 100; // r_m
@@ -36,8 +36,7 @@ void VisualizeMap() {
   }
 }
 
-void GeneratePointList() {
-  int seed = 0;
+void GeneratePointList(int seed) {
   seed ^= kSize;
   seed ^= kConnectionRange;
   seed ^= kNumberOfSensors;
@@ -49,7 +48,6 @@ void GeneratePointList() {
   seed ^= kFromMcRate;
   seed ^= kMovingRate;
   seed ^= kToMcRate;
-  srand(seed);
   vector<Sensor> point_list;
   point_list.push_back({0, 0, 0});
   for (int x = -kSize; x <= kSize; x++) {
@@ -61,7 +59,7 @@ void GeneratePointList() {
   sensors = vector<Sensor>(point_list.begin(), point_list.begin() + kNumberOfSensors + 1);
 }
 
-void Dijkstra() {
+bool Dijkstra() {
   set<pair<double, int>> s;
   vector<double> dist(sensors.size(), kInf);
   vector<bool> used(sensors.size(), 0);
@@ -88,21 +86,28 @@ void Dijkstra() {
     }
   }
 
-  for (int i = 0; i <= kNumberOfSensors; i++) {
-    if (!used[i]) {
-      cout << i << endl;
-    }
+  // for (int i = 0; i <= kNumberOfSensors; i++) {
+  //   if (!used[i]) {
+  //     cout << i << endl;
+  //   }
+  // }
+
+  if (!all_of(used.begin(), used.end(), [](bool u) {
+    return u;
+  })) {
+    return false;
   }
 
-  assert(all_of(used.begin(), used.end(), [](bool u) {
-    return u;
-  }));
+  // assert(all_of(used.begin(), used.end(), [](bool u) {
+  //   return u;
+  // }));
 
   for (int i = (int)list.size() - 1; i >= 0; i--) {
     auto id = list[i];
     sensors[id].consuming_rate += kDefaultConsumingRate;
     if (pre[id] != -1) sensors[pre[id]].consuming_rate += sensors[id].consuming_rate;
   }
+  return true;
 }
 
 string GetFilePath() {
@@ -130,11 +135,19 @@ void DumpDataToFile() {
   ofs.close();
 }
 
-int main() {
+int main(int argc, char* argv[]) {
   ios_base::sync_with_stdio(0);
   cin.tie(0);
-  GeneratePointList();
-  Dijkstra();
-  DumpDataToFile();
+  int seed = atoi(argv[1]);
+  srand(seed);
+  int it = 0;
+  cerr << "generating" << endl;
+  while (1) {
+    cerr << "seed = " << seed << " it = " << ++it << endl;
+    GeneratePointList(seed);
+    if (!Dijkstra()) continue;
+    DumpDataToFile();
+    break;
+  }
   return 0;
 }
