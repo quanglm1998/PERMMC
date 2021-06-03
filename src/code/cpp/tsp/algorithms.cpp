@@ -28,14 +28,14 @@ tsp::tsp(tsp & source)
     int size = source.original_list.size();
     for (int i = 0; i < size; ++i) 
     {
-        original_list.push_back(new city(*source.original_list[i]));
+        original_list.push_back(make_shared<city>(*source.original_list[i]));
     }
 
     size = source.solution.size();
 
     for (int i = 0; i < size; ++i) 
     {
-        solution.push_back(new city(*source.solution[i]));
+        solution.push_back(make_shared<city>(*source.solution[i]));
     }
 
     num_cities = source.num_cities;
@@ -67,7 +67,7 @@ int tsp::read_file(const char * filename)
 
     while (read>>id_read>>x_read>>y_read) // go till end of file
     {
-        original_list.push_back(new city(id_read, x_read, y_read, id_read, false));
+        original_list.push_back(make_shared<city>(id_read, x_read, y_read, id_read, false));
         ++added;
     }
 
@@ -80,7 +80,7 @@ int tsp::brute_force_wrapper()
 {
     int distance = 0;
     int min_distance = 9999999;
-    deque <city*> best_path;
+    deque <shared_ptr<city>> best_path;
 
     if (solution.empty())
         nearest_neighbor_basic(0);
@@ -94,7 +94,7 @@ int tsp::brute_force_wrapper()
 }
 
 // Recursive brute force algorithm to calculate all permutations of tours and find the optimal one.
-void tsp::brute_force(deque <city*> & best_path, int & min_distance, int cities_left)
+void tsp::brute_force(deque <shared_ptr<city>> & best_path, int & min_distance, int cities_left)
 {
     int current_dist = 0;
 
@@ -168,7 +168,7 @@ int tsp::nearest_neighbor_basic(int start_index)
     int current_dist = 0;
     int closest_index = 0;
     int current_num = num_cities;
-    deque <city*> temp;
+    deque <shared_ptr<city>> temp;
     copy_city_deque(original_list, temp);       // save original list
 
     solution.clear();
@@ -204,7 +204,7 @@ int tsp::nearest_neighbor_basic(int start_index)
 // 2-opt neighbor solution check
 int tsp::two_change()
 {
-    deque <city*> new_path;
+    deque <shared_ptr<city>> new_path;
     int min_distance = get_solution_distance();
     bool start_over = false;
 
@@ -238,7 +238,7 @@ int tsp::two_change()
 // 2-opt with neighbor list (NOT WORKING)
 int tsp::two_opt()
 {
-    deque <city*> new_path;
+    deque <shared_ptr<city>> new_path;
     int min_distance = get_solution_distance();
     int k = 0;
 
@@ -263,7 +263,7 @@ int tsp::two_opt()
 // Reverses the order of the cities from i to k.
 int tsp::swap_two(int i, int k)
 {
-    deque <city*> temp;
+    deque <shared_ptr<city>> temp;
     int count = 0;
 
     // Reverse order
@@ -337,13 +337,13 @@ void tsp::fix_positions()
 }
 
 // Copies a deque of city pointers from source to dest
-void copy_city_deque(deque <city*> & source, deque <city*> & dest)
+void copy_city_deque(deque <shared_ptr<city>> & source, deque <shared_ptr<city>> & dest)
 {
     int length = source.size();
     dest.clear();
     for (int i = 0; i < length; ++i)
     {
-        dest.push_back(new city(*source[i]));
+        dest.push_back(make_shared<city>(*source[i]));
     }
 }
 

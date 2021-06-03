@@ -12,7 +12,7 @@ using namespace std;
 // const unsigned int kSeed = 0; // for randomizing
 const int kSize = 50; // kSize * kSize plane with (0,0) being the BS
 const int kConnectionRange = 20; // radius of a sensor, ensure that the map is CONNECTED
-const int kNumberOfSensors = 100;
+const int kNumberOfSensors = 130;
 const int kDefaultConsumingRate = 10;
 
 const int kEMax = 10000;

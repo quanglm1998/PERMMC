@@ -34,7 +34,7 @@ city::~city()
 }
 
 // Calculates the Euclidean distance to city_in
-int city::dist(city * city_in)
+int city::dist(shared_ptr<city> city_in)
 {
     float x2 = city_in->get_x();
     float y2 = city_in->get_y();
@@ -68,7 +68,7 @@ int city::get_pos()
     return pos;
 }
 
-city *& city::get_neighbor(int index)
+shared_ptr<city>& city::get_neighbor(int index)
 {
     return neighbor_list[index];
 }
@@ -107,7 +107,7 @@ int city::write_out(ofstream & write)
 }
 
 // Copies in a city and its neighbor list
-int city::copy_city(city * city_in)
+int city::copy_city(shared_ptr<city> city_in)
 {
     if (city_in == NULL)
     {
@@ -125,7 +125,7 @@ int city::copy_city(city * city_in)
 }
 
 // Returns 1 if id, x, y are equivalent to those in city_in, otherwise returns 0
-int city::compare(const city * city_in)
+int city::compare(const shared_ptr<city> city_in)
 {
     if (city_in->id == id && city_in->x == x && city_in->y == y)
     {
@@ -136,9 +136,9 @@ int city::compare(const city * city_in)
 }
 
 // Builds a neighbor list from cities, sorted by distance
-void city::build_neighbor_list(deque <city*> & cities, int num_cities)
+void city::build_neighbor_list(deque <shared_ptr<city>> & cities, int num_cities)
 {
-    tree sorted(this); // Creates a tree with the current city as owner (to calculate distances for sorting)
+    tree sorted(make_shared<city>(*this)); // Creates a tree with the current city as owner (to calculate distances for sorting)
     neighbor_list.clear(); // Erase existing neighbor list
     
     for (int i = 0; i < num_cities; ++i)
@@ -172,9 +172,9 @@ bool city::nl_is_empty()
     return neighbor_list.empty();
 }
 
-void city::push_to_list(city *& to_add)
+void city::push_to_list(shared_ptr<city>& to_add)
 {
-    neighbor_list.push_back(new city(*to_add));
+    neighbor_list.push_back(make_shared<city>(*to_add));
 }
 
 void city::display_neighbor_list()

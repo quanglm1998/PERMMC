@@ -24,7 +24,7 @@ tree_node *& tree_node::get_right()
 }
 
 // Set the item to item_in
-int tree_node::set_city(city *& city_in)
+int tree_node::set_city(shared_ptr<city>& city_in)
 {
     if (!city_in)
         return 0;
@@ -35,7 +35,7 @@ int tree_node::set_city(city *& city_in)
 }
 
 // Return the item
-city *& tree_node::get_city()
+shared_ptr<city>& tree_node::get_city()
 {
     return tree_city;
 }
@@ -44,7 +44,7 @@ city *& tree_node::get_city()
 // tree constructor:
 tree::tree() : owner_city(NULL), root(NULL) {}
 
-tree::tree(city * city_in) : owner_city(city_in), root(NULL) {}
+tree::tree(shared_ptr<city> city_in) : owner_city(city_in), root(NULL) {}
 
 tree::~tree()
 {
@@ -73,13 +73,13 @@ void tree::copy(tree_node * source, tree_node *& dest)
 }
 
 // Adds a new item to the tree
-void tree::add_to_tree(city *& to_add)
+void tree::add_to_tree(shared_ptr<city>& to_add)
 {
     insert(root, to_add);
 }
 
 // Recursive insert function:
-void tree::insert(tree_node *& root, city *& to_add)
+void tree::insert(tree_node *& root, shared_ptr<city>& to_add)
 {
     if (!root)
     {
@@ -177,12 +177,12 @@ bool tree::is_equal(tree_node * root_one, tree_node * root_two)
 }
 
 // Builds a neighbor list
-void tree::build_neighbor_list(deque <city*> & neighbor_list, int size)
+void tree::build_neighbor_list(deque <shared_ptr<city>> & neighbor_list, int size)
 {
     traverse_and_build(root, neighbor_list, size);
 }
 
-void tree::traverse_and_build(tree_node * root, deque <city*> & neighbor_list, int size)
+void tree::traverse_and_build(tree_node * root, deque <shared_ptr<city>> & neighbor_list, int size)
 {
     if (!root)
         return;
@@ -198,7 +198,7 @@ void tree::traverse_and_build(tree_node * root, deque <city*> & neighbor_list, i
 // ***************************************************************
 // ***************************OPERATORS***************************
 // Add a player_item to an existing tree
-tree & tree::operator += ( city * to_add)
+tree & tree::operator += ( shared_ptr<city> to_add)
 {
     add_to_tree(to_add); // adds the item to the tree
     return *this;
@@ -233,7 +233,7 @@ tree & tree::operator = ( tree & source)
 }
  
 // Adds an item to the tree, residual value is a temporary tree
-tree tree::operator + ( city * to_add)
+tree tree::operator + ( shared_ptr<city> to_add)
 {
     tree temp;
     copy(root, temp.root);
@@ -288,7 +288,7 @@ bool tree::operator != ( tree & tree_in)
 }
 
 // Adds a tree and an item, alternate arg
-tree operator + ( city * item_in,  tree & tree_in)
+tree operator + ( shared_ptr<city> item_in,  tree & tree_in)
 {
     tree temp = tree_in;
     temp.add_to_tree(item_in);

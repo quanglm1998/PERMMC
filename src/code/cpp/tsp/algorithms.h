@@ -11,6 +11,7 @@
 #include "city.h"
 #include <vector>
 #include <signal.h>
+#include <memory>
 
 using namespace std;
 
@@ -35,12 +36,12 @@ class tsp
         void fix_positions(); // Updates pos of cities in solution
         void rotate(int pos); // Used by brute_force(...) to create permutations
     private:
-        void brute_force(deque <city*> & best_path, int & min_distance, int cities_left); // Recursive function called by brute_force_wrapper()
-        deque <city*> original_list; // Stores the initial list of cities
-        deque <city*> solution; // Stores the current solution
+        void brute_force(deque <shared_ptr<city>> & best_path, int & min_distance, int cities_left); // Recursive function called by brute_force_wrapper()
+        deque <shared_ptr<city>> original_list; // Stores the initial list of cities
+        deque <shared_ptr<city>> solution; // Stores the current solution
         int num_cities; // Stores the number of cities read into original_list
 };
 
-void copy_city_deque(deque <city*> & source, deque <city*> & dest); // Copies a deque of city*
+void copy_city_deque(deque <shared_ptr<city>> & source, deque <shared_ptr<city>> & dest); // Copies a deque of city*
 void end_opt(int signum); // Terminates optimization after SIGTERM signal received
 #endif
