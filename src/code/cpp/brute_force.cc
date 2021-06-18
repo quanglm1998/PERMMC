@@ -7,7 +7,7 @@ using namespace std;
 
 double GetMinDist(int mask, vector<int> &cluster) {
   double res = 1e18;
-  vector<int> min_cluster = cluster;
+  // vector<int> min_cluster = cluster;
   while (1) {
     double cur = 0;
     Sensor last = Sensor::GetDummy();
@@ -18,11 +18,11 @@ double GetMinDist(int mask, vector<int> &cluster) {
     cur += GetDistance(last, Sensor::GetDummy());
     if (res > cur) {
       res = cur;
-      min_cluster = cluster;
+      // min_cluster = cluster;
     }
     if (!next_permutation(cluster.begin(), cluster.end())) break;
   }
-  cluster = min_cluster;
+  // cluster = min_cluster;
   return res;
 }
 
@@ -31,9 +31,9 @@ int main() {
   cin.tie(0);
   string file_path = "data/data_foo.txt";
   ReadInput(file_path);
-  assert(number_of_sensors <= 10);
+  // assert(number_of_sensors <= 10);
   vector<bool> can_mc(1 << number_of_sensors, false);
-  vector<vector<int>> min_cluster(1 << number_of_sensors, vector<int>());
+  // vector<vector<int>> min_cluster(1 << number_of_sensors, vector<int>());
   can_mc[0] = true;
   for (int mask = 1; mask < (1 << number_of_sensors); ++mask) {
     vector<int> cluster;
@@ -41,7 +41,7 @@ int main() {
       if (mask >> i & 1) cluster.push_back(i);
     }
     int t_m = GetMinDist(mask, cluster);
-    min_cluster[mask] = cluster;
+    // min_cluster[mask] = cluster;
     auto sum_consuming_rate = 0;
     auto max_consuming_rate = 0;
     for (const auto &id : cluster) {
@@ -67,7 +67,7 @@ int main() {
     can_mc[mask] = numer < denom;
   }
 
-  vector<int> dp(1 << number_of_sensors, 1e9);
+  vector<int> dp(1 << number_of_sensors, number_of_sensors);
   vector<int> trace(1 << number_of_sensors, -1);
   dp[0] = 0;
   for (int mask = 1; mask < (1 << number_of_sensors); ++mask) {
@@ -81,7 +81,7 @@ int main() {
     }
   }
   int curmask = (1 << number_of_sensors) - 1;
-  cout << dp[curmask] << endl; 
+  cout << dp[curmask]; 
   // int cnt = 0;
   // while (curmask) {
   //   cout << "# " << ++cnt << endl;

@@ -40,6 +40,12 @@ double GetRateOnSingleCircle(const vector<int> &cluster) {
 
   if (denom <= 0) return 1e9;
   // cout << fixed << setprecision(2) << numer << ' ' << denom << endl;
+  // if (numer < denom) {
+  //   cerr << "both" << endl;
+  //   cerr << numer << endl;
+  //   cerr << double(e_max * sum_consuming_rate) /(max_consuming_rate * to_sensor_rate) << endl;
+  //   cerr << double(e_mc_max - t_m * moving_rate) / from_mc_rate << endl;
+  // }
   return numer / denom;
 }
 
@@ -188,9 +194,9 @@ vector<vector<int>> MoveClusters(vector<vector<int>> clusters,
     u = max_element(rate_vector.begin(), rate_vector.end()) -
         rate_vector.begin();
     if (clusters[u].size() == 1) {
-      cerr << "rate " << fixed << setprecision(5) << rate_vector[u] << endl;
-      cerr << "node " << clusters[u][0] << endl;
-      cerr << "can't even support only 1 node" << endl;
+      // cerr << "rate " << fixed << setprecision(5) << rate_vector[u] << endl;
+      // cerr << "node " << clusters[u][0] << endl;
+      // cerr << "can't even support only 1 node" << endl;
 
       // auto sum_consuming_rate = sensors[clusters[u][0]].consuming_rate;
 
@@ -199,7 +205,11 @@ vector<vector<int>> MoveClusters(vector<vector<int>> clusters,
       //             double(from_mc_rate) / to_mc_rate
       //      << endl;
     }
-    assert(clusters[u].size() > 1);
+    // assert(clusters[u].size() > 1);
+    if (clusters[u].size() <= 1) {
+      cout << number_of_sensors;
+      exit(0);
+    }
     vector<int> min_id;
     for (int i = 0; i < 5; i++) {
       int cur = -1;
@@ -265,7 +275,7 @@ bool CanArrange(int m) {
   // auto starting_time = clock();
   auto num_try = 0;
   if (m > 1 && rate >= 1.0) {
-    while (num_try < 10 && rate >= 1.0) {
+    while (num_try < 5 && rate >= 1.0) {
       bool found = false;
 
       // for (int it = 0; it < number_of_sensors && rate > 0.99; ++it) {
@@ -321,7 +331,7 @@ bool CanArrange(int m) {
       }
     }
   }
-  cerr << fixed << setprecision(10) << rate << endl;
+  // cerr << fixed << setprecision(10) << rate << endl;
   if (rate < 1.0) {
     res = clusters;
   }
@@ -335,14 +345,14 @@ int main() {
   ReadInput(file_path);
   int low = 0, high = number_of_sensors + 1;
   while (high - low > 1) {
-    cerr << "low = " << low << " high = " << high << endl;
+    // cerr << "low = " << low << " high = " << high << endl;
     int mid = (low + high) / 2;
     if (CanArrange(mid))
       high = mid;
     else
       low = mid;
   }
-  cout << high << endl;
+  cout << high;
   // int cnt = 0;
   // for (auto cluster : res) {
   //   cout << "# " << ++cnt << endl;

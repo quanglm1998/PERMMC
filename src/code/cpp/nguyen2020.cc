@@ -119,11 +119,12 @@ int main(int argc, char const *argv[]) {
 
   while (!list_sensors.empty()) {
     if (!FindPath(list_sensors)) {
-      cout << "Can't find solution!\n";
+      // cout << "Can't find solution!\n";
+      cout << number_of_sensors;
       return 0;
     }
     num_mc++;
   }
-  cout << num_mc << endl;
+  cout << num_mc;
   return 0;
 }

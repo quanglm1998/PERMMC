@@ -10,17 +10,17 @@ using namespace std;
  */
 
 // const unsigned int kSeed = 0; // for randomizing
-const int kSize = 50; // kSize * kSize plane with (0,0) being the BS
-const int kConnectionRange = 20; // radius of a sensor, ensure that the map is CONNECTED
-const int kNumberOfSensors = 130;
-const int kDefaultConsumingRate = 10;
+const int kSize = 250; // kSize * kSize plane with (0,0) being the BS
+const int kConnectionRange = 160; // radius of a sensor, ensure that the map is CONNECTED
+int kNumberOfSensors = 100;
 
-const int kEMax = 10000;
-const int kEMcMax = 100000;
-const int kToSensorRate = 5000; // r
-const int kFromMcRate = 5010; // r_c
-const int kMovingRate = 100; // r_m
-const int kToMcRate = 1000000; // r_mc
+int kDefaultConsumingRate = 5;
+int kEMax = 100'000;
+int kEMcMax = 5'000'000;
+const int kToSensorRate = 400; // r
+const int kFromMcRate = 401; // r_c
+const int kMovingRate = 20; // r_m
+const int kToMcRate = 80'000; // r_mc
 
 void VisualizeMap() {
   vector<vector<char>> matrix(kSize * 2 + 1, vector<char>(kSize * 2 + 1, '.'));
@@ -36,18 +36,7 @@ void VisualizeMap() {
   }
 }
 
-void GeneratePointList(int seed) {
-  seed ^= kSize;
-  seed ^= kConnectionRange;
-  seed ^= kNumberOfSensors;
-  seed ^= kDefaultConsumingRate;
-
-  seed ^= kEMax;
-  seed ^= kEMcMax;
-  seed ^= kToSensorRate;
-  seed ^= kFromMcRate;
-  seed ^= kMovingRate;
-  seed ^= kToMcRate;
+void GeneratePointList() {
   vector<Sensor> point_list;
   point_list.push_back({0, 0, 0});
   for (int x = -kSize; x <= kSize; x++) {
@@ -135,16 +124,34 @@ void DumpDataToFile() {
   ofs.close();
 }
 
+// main seed #sensor e_max e_mc_max consuming_rate
+ 
 int main(int argc, char* argv[]) {
   ios_base::sync_with_stdio(0);
   cin.tie(0);
   int seed = atoi(argv[1]);
+  kNumberOfSensors = atoi(argv[2]);
+  kEMax = atoi(argv[3]);
+  kEMcMax = atoi(argv[4]);
+  kDefaultConsumingRate = atoi(argv[5]);
+
+  seed ^= kSize;
+  seed ^= kConnectionRange;
+  seed ^= kNumberOfSensors;
+  seed ^= kDefaultConsumingRate;
+
+  seed ^= kEMax;
+  seed ^= kEMcMax;
+  seed ^= kToSensorRate;
+  seed ^= kFromMcRate;
+  seed ^= kMovingRate;
+  seed ^= kToMcRate;
   srand(seed);
   int it = 0;
   cerr << "generating" << endl;
   while (1) {
-    cerr << "seed = " << seed << " it = " << ++it << endl;
-    GeneratePointList(seed);
+    cerr << "it = " << ++it << endl;
+    GeneratePointList();
     if (!Dijkstra()) continue;
     DumpDataToFile();
     break;
